@@ -1,0 +1,20 @@
+{
+  "name": "recommendation-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack content-based recommendation system with NestJS and Next.js",
+  "scripts": {
+    "dev:all": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:client": "npm run dev --workspace=client",
+    "build": "npm run build --workspaces",
+    "start": "npm run start --workspace=server"
+  },
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
