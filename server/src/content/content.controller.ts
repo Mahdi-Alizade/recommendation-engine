@@ -1,30 +1,31 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ContentService } from './content.service';
-import { CreateContentDto, RecommendDto } from './dto/create-content.dto';
+import { CreateContentDto } from './dto/create-content.dto';
 
-@Controller('items')
+@Controller('content')
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
   @Post()
-  async create(@Body() dto: CreateContentDto) {
-    return this.contentService.addItem(dto);
-  }
-
-  @Post('recommend')
-  async recommend(@Body() dto: RecommendDto) {
-    // اگر کاربر هیچ تگی انتخاب نکند، خطا می‌دهد (ValidationPipe در main.ts هندل می‌کند)
-    // اما اگر بیاید و لیست خالی بفرستد، الگوریتم امتیاز 0 می‌دهد.
-    // اینجا چک می‌کنیم که حتما حداقل یک تگ انتخاب شده باشد
-    if (!dto.selectedTags || dto.selectedTags.length === 0) {
-      return []; 
-    }
-    
-    return this.contentService.recommend(dto);
+  async create(@Body() createContentDto: CreateContentDto) {
+    return this.contentService.create(createContentDto);
   }
 
   @Get()
   async findAll() {
-    return this.contentService.getAllItems();
+    return this.contentService.findAll();
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.contentService.findOne(id);
+  }
+
+  @Get(':id/recommendations')
+  async getRecommendations(
+    @Param('id') id: string,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+  ) {
+    return this.contentService.getRecommendations(id, limit || 5);
   }
 }
