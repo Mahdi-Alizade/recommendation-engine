@@ -3,8 +3,8 @@ import { ContentService } from './content.service';
 import { ContentController } from './content.controller';
 
 @Module({
-  imports: [], // در آینده پکیج‌های دیگر اینجا اضافه می‌شوند
   controllers: [ContentController],
   providers: [ContentService],
+  exports: [ContentService],
 })
 export class ContentModule {}
