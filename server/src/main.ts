@@ -1,11 +1,16 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global validation pipe to enforce DTO rules strictly
+  app.enableCors({
+    origin: process.env.ALLOWED_ORIGIN || 'http://localhost:3000',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -14,18 +19,7 @@ async function bootstrap() {
     }),
   );
 
-  // Security: CORS setup for frontend
-  app.enableCors({
-    origin: 'http://localhost:3000', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
-
-  // Adding API Prefix
-  app.setGlobalPrefix('api');
-
-  const port = process.env.PORT ?? 3001;
+  const port = process.env.PORT || 4000;
   await app.listen(port);
-  console.log(`Server running on http://localhost:${port}`);
 }
 bootstrap();
