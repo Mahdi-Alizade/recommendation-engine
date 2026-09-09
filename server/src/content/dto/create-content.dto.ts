@@ -1,22 +1,24 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateContentDto {
   @IsString()
   @IsNotEmpty()
+  @MinLength(3)
   title: string;
 
-  @IsArray()
-  @IsString({ each: true })
-  tags: string[];
-}
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-export class RecommendDto {
-  @IsArray()
-  @IsString({ each: true })
-  selectedTags: string[];
+  @IsString()
+  @IsNotEmpty()
+  body: string;
 
-  @IsNumber()
+  @IsString()
+  @IsNotEmpty()
+  category: string;
+
+  @IsString()
   @IsOptional()
-  @Min(1)
-  limit?: number = 5;
+  tags?: string;
 }
