@@ -64,7 +64,6 @@ export class ContentService {
       return [];
     }
 
-    // استخراج متن ترکیبی اسناد شامل تایتل، توضیحات، بدنه و تگ‌ها (با اعمال ضریب وزن‌دهی)
     const corpus = allContents.map((doc) => ({
       id: doc.id,
       text: `${doc.title} ${doc.title} ${doc.category} ${doc.tags} ${doc.description} ${doc.body}`,
@@ -75,21 +74,20 @@ export class ContentService {
       tokens: this.tokenize(doc.text),
     }));
 
-    // ایجاد واژگان کل مجموعه (Vocabulary)
-    const vocabulary = Array.from(
-      new Set(tokenizedDocs.flatMap((doc) => doc.tokens))
-    );
+    const allTokens: string[] = [];
+    for (const doc of tokenizedDocs) {
+      allTokens.push(...doc.tokens);
+    }
+    const vocabulary: string[] = Array.from(new Set(allTokens));
 
     const docCount = tokenizedDocs.length;
 
-    // محاسبه Inverse Document Frequency (IDF)
     const idfMap = new Map<string, number>();
     for (const term of vocabulary) {
       const docsWithTerm = tokenizedDocs.filter((doc) => doc.tokens.includes(term)).length;
       idfMap.set(term, Math.log((docCount + 1) / (docsWithTerm + 1)) + 1);
     }
 
-    // ساخت بردارهای TF-IDF برای هر سند
     const vectors = new Map<string, number[]>();
     for (const doc of tokenizedDocs) {
       const termFrequencies = new Map<string, number>();
@@ -98,7 +96,7 @@ export class ContentService {
       }
 
       const totalTokens = doc.tokens.length || 1;
-      const vector = vocabulary.map((term) => {
+      const vector = vocabulary.map((term: string) => {
         const tf = (termFrequencies.get(term) || 0) / totalTokens;
         const idf = idfMap.get(term) || 0;
         return tf * idf;
@@ -112,7 +110,6 @@ export class ContentService {
       return [];
     }
 
-    // محاسبه کسینوس شباهت و مرتب‌سازی بر اساس شباهت
     const scoredList: { content: Content; similarityScore: number }[] = [];
 
     for (const doc of allContents) {
