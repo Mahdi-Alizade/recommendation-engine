@@ -13,7 +13,8 @@ model Content {
   description String
   body        String
   category    String
-  tags        String   // ذخیره تگ‌ها به صورت کاما-جدا شده یا آرایه رشته‌ای تبدیل‌پذیر
+  tags        String
+  vectorCache String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
